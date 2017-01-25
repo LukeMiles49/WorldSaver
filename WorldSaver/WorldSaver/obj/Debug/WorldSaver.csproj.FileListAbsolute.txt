@@ -1,5 +1,0 @@
-c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaver\WorldSaver\bin\Debug\WorldSaver.dll
-c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaver\WorldSaver\bin\Debug\WorldSaver.pdb
-c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaver\WorldSaver\obj\Debug\WorldSaver.csprojResolveAssemblyReference.cache
-c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaver\WorldSaver\obj\Debug\WorldSaver.dll
-c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaver\WorldSaver\obj\Debug\WorldSaver.pdb
