@@ -1,0 +1,8 @@
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\bin\Debug\WorldSaverTest.exe.config
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\bin\Debug\WorldSaverTest.exe
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\bin\Debug\WorldSaverTest.pdb
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\bin\Debug\PlayerIOClient.dll
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\bin\Debug\WorldSaver.dll
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\obj\Debug\WorldSaverTest.csprojResolveAssemblyReference.cache
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\obj\Debug\WorldSaverTest.exe
+c:\users\luke4\onedrive\documents\visual studio 2015\Projects\WorldSaverTest\WorldSaverTest\obj\Debug\WorldSaverTest.pdb
