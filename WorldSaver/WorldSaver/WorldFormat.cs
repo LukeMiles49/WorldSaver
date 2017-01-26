@@ -71,7 +71,7 @@ namespace WorldSaver
 
         public static WorldFormat STANDARD
         {
-            get { return new WorldFormat("standard", 1); }
+            get { return new WorldFormat("standard", 2); }
         }
 
         public static WorldFormat SIMPLE

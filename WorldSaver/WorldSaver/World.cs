@@ -68,6 +68,45 @@ namespace WorldSaver
             bgs = backgrounds;
             botData = new Dictionary<string, Dictionary<string, object>>();
         }
+
+        public World GetArea(int x, int y, int width, int height)
+        {
+            if (x < 0) throw new ArgumentOutOfRangeException("x", x, "x cannot be less than 0.");
+            if (y < 0) throw new ArgumentOutOfRangeException("y", y, "y cannot be less than 0.");
+            if (x + width > fgs.GetLength(0)) throw new ArgumentOutOfRangeException("width", width, "x + width cannot be greater than the world width.");
+            if (y + width > fgs.GetLength(1)) throw new ArgumentOutOfRangeException("height", height, "y + height cannot be greater than the world height.");
+
+            Block[,] foreground = new Block[width, height];
+            Block[,] background = new Block[width, height];
+
+            for (int Y = 0; Y < height; Y++)
+            {
+                for (int X = 0; X < width; X++)
+                {
+                    foreground[X, Y] = fgs[x + X, y + Y];
+                    background[X, Y] = bgs[x + X, y + Y];
+                }
+            }
+
+            return new World { fgs = foreground, bgs = background, botData = new Dictionary<string, Dictionary<string, object>>() };
+        }
+
+        public void SetArea(int x, int y, World world)
+        {
+            if (x < 0) throw new ArgumentOutOfRangeException("x", x, "x cannot be less than 0.");
+            if (y < 0) throw new ArgumentOutOfRangeException("y", y, "y cannot be less than 0.");
+            if (x + world.fgs.GetLength(0) > fgs.GetLength(0)) throw new ArgumentOutOfRangeException("world", world, "x + world width cannot be greater than the world width.");
+            if (y + world.fgs.GetLength(1) > fgs.GetLength(1)) throw new ArgumentOutOfRangeException("world", world, "y + world height cannot be greater than the world height.");
+            
+            for (int Y = 0; Y < world.fgs.GetLength(1); Y++)
+            {
+                for (int X = 0; X < world.fgs.GetLength(0); X++)
+                {
+                    fgs[x + X, y + Y] = world.fgs[X, Y];
+                    bgs[x + X, y + Y] = world.bgs[X, Y];
+                }
+            }
+        }
         
         public static World Load(string fileName)
         {
@@ -85,28 +124,28 @@ namespace WorldSaver
 
             WorldFormat format = new WorldFormat((string)jsonDict["format"]);
 
-            if (format == WorldFormat.STANDARD) return FromStandardFormat(jsonDict);
+            if (format == WorldFormat.STANDARD) return FromStandardFormat(jsonDict, format.Version);
             else throw new NotImplementedException("'" + format + "' format has not yet been implemented");
         }
 
-        static World FromStandardFormat(Dictionary<string, object> json)
+        static World FromStandardFormat(Dictionary<string, object> json, int v)
         {
-            if (!json.ContainsKey("blist")) throw new ArgumentException("Json does not contain block list.");
-            if (!json.ContainsKey("bglist")) throw new ArgumentException("Json does not contain background list.");
-            if (!json.ContainsKey("blocks")) throw new ArgumentException("Json does not contain a block array.");
-            if (!json.ContainsKey("backgrounds")) throw new ArgumentException("Json does not contain a background array.");
+            if (!json.ContainsKey(v < 2 ? "blist" : "fglist")) throw new ArgumentException("Json does not contain a foreground list.");
+            if (!json.ContainsKey("bglist")) throw new ArgumentException("Json does not contain a background list.");
+            if (!json.ContainsKey(v < 2 ? "blocks" : "foreground")) throw new ArgumentException("Json does not contain a foreground array.");
+            if (!json.ContainsKey(v < 2 ? "backgrounds" : "background")) throw new ArgumentException("Json does not contain a background array.");
             if (!json.ContainsKey("data")) throw new ArgumentException("Json does not contain a bot data object.");
 
             int width = 0;
             int height = 0;
             
             // TODO: try-catch
-            height = ((List<object>)json["backgrounds"]).Count > ((List<object>)json["blocks"]).Count ?
-                ((List<object>)json["backgrounds"]).Count :
-                ((List<object>)json["blocks"]).Count;
-            foreach (object row in (List<object>)json["blocks"])
+            height = ((List<object>)json[v < 2 ? "backgrounds" : "background"]).Count > ((List<object>)json["blocks"]).Count ?
+                ((List<object>)json[v < 2 ? "backgrounds" : "background"]).Count :
+                ((List<object>)json[v < 2 ? "blocks" : "foreground"]).Count;
+            foreach (object row in (List<object>)json[v < 2 ? "blocks" : "foreground"])
                 width = ((List<object>)row).Count > width ? ((List<object>)row).Count : width;
-            foreach (object row in (List<object>)json["backgrounds"])
+            foreach (object row in (List<object>)json[v < 2 ? "backgrounds" : "background"])
                 width = ((List<object>)row).Count > width ? ((List<object>)row).Count : width;
 
             List<Block> fgKeys = new List<Block> { new Block(0) };
@@ -114,7 +153,7 @@ namespace WorldSaver
             Block[,] foreground = new Block[width, height];
             Block[,] background = new Block[width, height];
 
-            foreach(object block in (List<object>)json["blist"])
+            foreach(object block in (List<object>)json[v < 2 ? "blist" : "fglist"])
             {
                 if (block is long) fgKeys.Add(new Block((uint)(long)block));
                 else fgKeys.Add(new Block((uint)(long)((List<object>)block)[0], ((List<object>)block).GetRange(1, ((List<object>)block).Count - 1).ToArray()));
@@ -126,7 +165,7 @@ namespace WorldSaver
                 else bgKeys.Add(new Block((uint)(long)((List<object>)block)[0], ((List<object>)block).GetRange(1, ((List<object>)block).Count - 1).ToArray()));
             }
 
-            List<object> blocks = (List<object>)json["blocks"];
+            List<object> blocks = (List<object>)json[v < 2 ? "blocks" : "foreground"];
             for (int y = 0; y < height; y++)
             {
                 List<object> row = (y < blocks.Count) ? (List<object>)blocks[y] : new List<object>();
@@ -143,7 +182,7 @@ namespace WorldSaver
                 }
             }
 
-            blocks = (List<object>)json["backgrounds"];
+            blocks = (List<object>)json[v < 2 ? "backgrounds" : "background"];
             for (int y = 0; y < height; y++)
             {
                 List<object> row = (y < blocks.Count) ? (List<object>)blocks[y] : new List<object>();
@@ -231,7 +270,7 @@ namespace WorldSaver
                 }
             }
 
-            string json = "{\n\t\"format\": \"" + WorldFormat.STANDARD + "\",\n\t\"blist\": [";
+            string json = "{\n\t\"format\": \"" + WorldFormat.STANDARD + "\",\n\t\"fglist\": [";
             foreach (Block b in fgKeys)
             {
                 if (json[json.Length - 1] != '[') json += ",";
@@ -249,7 +288,7 @@ namespace WorldSaver
                 json += "\n\t\t" + ObjToJson(bData, false);
             }
 
-            json += "\n\t],\n\t\"blocks\": [";
+            json += "\n\t],\n\t\"foreground\": [";
             for (int y = 0; y < foreground.GetLength(1); y++)
             {
                 if (json[json.Length - 1] != '[') json += ",";
@@ -262,7 +301,7 @@ namespace WorldSaver
                 json += "\n\t\t" + ObjToJson(row, false);
             }
 
-            json += "\n\t],\n\t\"backgrounds\": [";
+            json += "\n\t],\n\t\"background\": [";
             for (int y = 0; y < background.GetLength(1); y++)
             {
                 if (json[json.Length - 1] != '[') json += ",";
